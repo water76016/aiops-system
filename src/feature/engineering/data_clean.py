@@ -6,6 +6,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import GridSearchCV
+# 添加sklearn的Imputer填充器
+# from sklearn.preprocessing import Imputer
 
 
 # 皮马印第安人糖尿病数据集
@@ -44,6 +48,27 @@ def find_na():
     print(pima.shape)
     # 查看数据的描述性统计
     print(pima.describe())
+
+    # 删除存在缺失值的行
+    pima_dropped = pima.dropna()
+
+    # 需要试验的KNN模型参数
+    knn_params = {
+        'n_neighbors': [1, 2, 3, 4, 5, 6, 7]
+    }
+
+    # 进行knn拟合
+    X_dropped = pima_dropped.drop('onset_diabetes', axis=1)
+    y_dropped = pima_dropped['onset_diabetes']
+
+    knn = KNeighborsClassifier()
+    # 设置KNN模型，准备进行网格搜索
+    grid = GridSearchCV(knn, knn_params)
+    grid.fit(X_dropped, y_dropped)
+
+
+    print(grid.best_score_, grid.best_params_)
+
 
 
 if __name__ == '__main__':
